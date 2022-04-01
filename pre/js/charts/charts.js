@@ -30,7 +30,7 @@ export function initChart(iframe) {
         //SELECCIÓN DE ELEMENTOS
         let selectedArr = ['nacional'];
         let mySellect = sellect("#my-element", {
-            originList: ['nacional','entre0y100','entre101y500','entre501y1000','entre1001y2000','entre2001y5000','entre5001y10000','entre10001y20000','entre20001y50000','entre50001y100000','entre100001y500000','500001ymas'],
+            originList: ['nacional','entre0y2000','entre2001y5000','entre5001y10000','entre10001y20000','entre20001y50000','entre50001y100000','entre100001y500000','500001ymas'],
             destinationList: ['nacional'],
             onInsert: onChange,
             onRemove: onChange
