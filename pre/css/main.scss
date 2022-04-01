@@ -66,7 +66,7 @@ body, button {
         &__logics {            
             display: flex;
             justify-content: space-between;
-            flex-wrap: wrap;
+            //flex-wrap: wrap;
         }
 
         &__logics--bis { //Botones adicionales para animar el gráfico
@@ -84,6 +84,9 @@ body, button {
         &__legend {
             margin-top: 8px;
             display: flex;
+            flex-wrap: wrap;
+
+            max-width: calc(100% - 140px);
 
             &--item {
                 position: relative;
@@ -98,6 +101,9 @@ body, button {
                 
                 padding-left: 22px;
                 margin-right: 16px;
+                margin-top: 8px;
+
+                min-width: 135px;
 
                 //En función de la clase CSS que le acompañe, tendrá un color u otro
                 &::before {
@@ -121,7 +127,11 @@ body, button {
                 &.other_1::before { background-color: #B58753; }
                 &.other_2::before { background-color: #731854; }
             }
-        }        
+        }
+        
+        &__animate {
+            width: auto;
+        }
 
         //Visualización
         &__viz {

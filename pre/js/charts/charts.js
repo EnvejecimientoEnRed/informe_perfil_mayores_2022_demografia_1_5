@@ -24,21 +24,20 @@ export function initChart(iframe) {
     //Creación de otros elementos relativos al gráfico que no requieran lectura previa de datos > Selectores múltiples o simples, timelines, etc 
 
     //Lectura de datos
-    d3.csv('https://raw.githubusercontent.com/CarlosMunozDiazCSIC/informe_perfil_mayores_2022_demografia_1_6/main/data/piramide_2021_tamanos_municipios.csv', function(error,data) {
+    d3.csv('https://raw.githubusercontent.com/CarlosMunozDiazCSIC/informe_perfil_mayores_2022_demografia_1_6/main/data/piramide_2021_tamanos_nacional.csv', function(error,data) {
         if (error) throw error;
 
         //SELECCIÓN DE ELEMENTOS
         let selectedArr = ['nacional'];
         let mySellect = sellect("#my-element", {
-            originList: ['nacional','entre0y2000','entre2001y5000','entre5001y10000','entre10001y20000','entre20001y50000','entre50001y100000','entre100001y500000','500001ymas'],
+            originList: ['entre0y2000','entre2001y5000','entre5001y10000','entre10001y20000','entre20001y50000','entre50001y100000','entre100001y500000','500001ymas','nacional'],
             destinationList: ['nacional'],
-            onInsert: onChange,
-            onRemove: onChange
+            onInsert: onChange
         });
 
         function onChange() {
             selectedArr = mySellect.getSelected();
-            setPyramids(selectedArr);
+            setPyramids(selectedArr, currentType);
         }
 
         mySellect.init();
@@ -78,7 +77,7 @@ export function initChart(iframe) {
 
         let y = d3.scaleBand()
             .range([ 0, height ])
-            .domain(dataAbsolutoEspanol.map(function(item) { return item.Edad; }).reverse())
+            .domain(data.map(function(item) { return item.Edad; }).reverse())
             .padding(.1);
 
         svg.append("g")
@@ -86,11 +85,25 @@ export function initChart(iframe) {
 
         function setPyramids(types, currentType) {
 
+            svg.selectAll('.chart-g')
+                .remove()
+                .exit();
+
             if (currentType == 'Absolutos') {
-                x.domain([-500000,500000]);
-                svg.select(".x-axis").call(d3.axisBottom(x));                
-                xM.domain([500000,0]);
-                xF.domain([0,500000]);
+
+                if(types.indexOf('nacional') != -1) {
+                    x.domain([-500000,500000]);
+                    svg.select(".x-axis").call(d3.axisBottom(x));                
+                    xM.domain([500000,0]);
+                    xF.domain([0,500000]);
+                } else {
+                    x.domain([-100000,100000]);
+                    svg.select(".x-axis").call(d3.axisBottom(x));                
+                    xM.domain([100000,0]);
+                    xF.domain([0,100000]);
+                }
+
+                
             } else {
                 x.domain([-1.5,1.5]);
                 svg.select(".x-axis").call(d3.axisBottom(x));
@@ -102,22 +115,74 @@ export function initChart(iframe) {
 
                 let auxData = data.filter(function(item) { if (item.Tipo == types[i] && item.Data == currentType) { return item; }});
 
-                svg.selectAll('.chart-g')
-                    .remove();
+                console.log(auxData, types[i], currentType);
 
-                svg.append("g")
+                if(types[i] != 'nacional') {
+                    svg.append("g")
+                        .attr('class', 'chart-g')
+                        .selectAll("rect")
+                        .data(auxData)
+                        .enter()
+                        .append("rect")
+                        .attr('class', 'prueba')
+                        .attr("fill", function(d) { if(d.Sexo == 'Hombres') { return COLOR_PRIMARY_1; } else { return COLOR_COMP_1; }})
+                        .style('opacity', function() {
+                            let opacity = '';
+                            switch(types[i]) {
+                                case 'entre0y2000':
+                                    opacity = '0.95';
+                                    break;
+                                case 'entre2001y5000':
+                                    opacity = '0.875';
+                                    break;
+                                case 'entre5001y10000':
+                                    opacity = '0.8';
+                                    break;
+                                case 'entre10001y20000':
+                                    opacity = '0.725';
+                                    break;
+                                case 'entre20001y50000':
+                                    opacity = '0.65';
+                                    break;
+                                case 'entre50001y100000':
+                                    opacity = '0.575';
+                                    break;
+                                case 'entre100001y500000':
+                                    opacity = '0.5';
+                                    break;
+                                case '500001ymas':
+                                    opacity = '0.425';
+                                    break;
+                                default:
+                                    opacity = '0.95';
+                                    break;
+                            }
+                            return opacity;
+                        })
+                        .attr("x", function(d) { if(d.Sexo == 'Hombres') { return xM(d.Valor); } else { return xF(0); }})
+                        .attr("y", function(d) { return y(d.Edad); })
+                        .attr("width", function(d) { if(d.Sexo == 'Hombres') { return xM(0) - xM(d.Valor); } else { return xF(d.Valor) - xF(0); }})
+                        .attr("height", y.bandwidth());
+
+                } else {
+
+                    svg.append("g")
                     .attr('class', 'chart-g')
                     .selectAll("rect")
                     .data(auxData)
                     .enter()
                     .append("rect")
                     .attr('class', 'prueba')
-                    .attr("fill", function(d) { if(d.Sexo == 'Hombres') { return COLOR_PRIMARY_1; } else { return COLOR_COMP_1; }})
-                    .style('opacity', '0.8')
+                    .attr('fill','none')
+                    .attr("stroke", function(d) { if(d.Sexo == 'Hombres') { return COLOR_PRIMARY_1; } else { return COLOR_COMP_1; }})
+                    .attr("stroke-width",'3px')
+                    .style('opacity', '0.5')
                     .attr("x", function(d) { if(d.Sexo == 'Hombres') { return xM(d.Valor); } else { return xF(0); }})
                     .attr("y", function(d) { return y(d.Edad); })
                     .attr("width", function(d) { if(d.Sexo == 'Hombres') { return xM(0) - xM(d.Valor); } else { return xF(d.Valor) - xF(0); }})
                     .attr("height", y.bandwidth());
+                }
+                
             }
 
         }
