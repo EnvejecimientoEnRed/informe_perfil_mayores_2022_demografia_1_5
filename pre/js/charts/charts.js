@@ -224,7 +224,7 @@ export function initChart(iframe) {
         });
 
         //Iframe
-        setFixedIframeUrl('informe_perfil_mayores_2022_demografia_1_6','piramide_espanoles_extranjeros');
+        setFixedIframeUrl('informe_perfil_mayores_2022_demografia_1_5','piramide_espanoles_extranjeros');
 
         //Redes sociales > Antes tenemos que indicar cuál sería el texto a enviar
         setRRSSLinks('piramide_espanoles_extranjeros');
