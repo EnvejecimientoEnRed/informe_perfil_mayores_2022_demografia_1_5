@@ -1,8 +1,8 @@
 //Desarrollo de las visualizaciones
 import * as d3 from 'd3';
 require('./sellect');
-import { numberWithCommas2 } from '../helpers';
-//import { getInTooltip, getOutTooltip, positionTooltip } from './modules/tooltip';
+import { numberWithCommas3 } from '../helpers';
+import { getInTooltip, getOutTooltip, positionTooltip } from '../modules/tooltip';
 import { setChartHeight } from '../modules/height';
 import { setChartCanvas, setChartCanvasImage } from '../modules/canvas-image';
 import { setRRSSLinks } from '../modules/rrss';
@@ -19,6 +19,20 @@ COLOR_ANAG__PRIM_1 = '#BA9D5F',
 COLOR_ANAG_PRIM_2 = '#9E6C51',
 COLOR_ANAG_PRIM_3 = '#9E3515',
 COLOR_ANAG_COMP_1 = '#1C5A5E';
+let tooltip = d3.select('#tooltip');
+
+//Diccionario
+let dictionary = [
+    {Tipo: 'Entre 0 y 2.000 habitantes', tipoData: 'entre0y2000', color: COLOR_PRIMARY_1, opacity: 1},
+    {Tipo: 'Entre 2.001 y 5.000', tipoData: 'entre2001y5000', color: COLOR_ANAG_PRIM_2, opacity: 1},
+    {Tipo: 'Entre 5.001 y 10.000', tipoData: 'entre5001y10000', color: COLOR_ANAG_PRIM_2, opacity: 0.8},
+    {Tipo: 'Entre 10.001 y 20.000', tipoData: 'entre10001y20000', color: COLOR_COMP_2, opacity: 1},
+    {Tipo: 'Entre 20.001 y 50.000', tipoData: 'entre20001y50000', color: COLOR_COMP_2, opacity: 0.8},
+    {Tipo: 'Entre 50.001 y 100.000', tipoData: 'entre50001y100000', color: COLOR_COMP_2, opacity: 0.6},
+    {Tipo: 'Entre 100.001 y 500.000', tipoData: 'entre100001y500000', color: COLOR_ANAG_COMP_1, opacity: 1},
+    {Tipo: '500.001 y más', tipoData: '500001ymas', color: COLOR_ANAG_COMP_1, opacity: 0.8},
+    {Tipo: 'Nacional', tipoData: 'nacional', color: COLOR_ANAG_PRIM_3, opacity: 1}
+]
 
 export function initChart(iframe) {
     //Creación de otros elementos relativos al gráfico que no requieran lectura previa de datos > Selectores múltiples o simples, timelines, etc 
@@ -112,7 +126,7 @@ export function initChart(iframe) {
             //Lógica en eje
             if (currentType == 'Absolutos') {
 
-                if(types.indexOf('nacional') != -1) {
+                if(types.indexOf('Nacional') != -1) {
                     x.domain([-500000,500000]);
                     svg.select(".x-axis").call(xAxis);                
                     xM.domain([500000,0]);
@@ -132,80 +146,65 @@ export function initChart(iframe) {
             }
 
             //Lógica en pirámides
-            for (let i = 0; i < types.length; i++) {
+            for (let i = types.length - 1; i >= 0; i--) {
 
-                let auxData = data.filter(function(item) { if (item.Tipo == types[i] && item.Data == currentType) { return item; }});
+                let dataType = dictionary.filter(function(item) { if(item.Tipo == types[i]) { return item; }})[0];
+                let auxData = data.filter(function(item) { if (item.Tipo == dataType.tipoData && item.Data == currentType) { return item; }});
 
-                console.log(auxData, types[i], currentType);
-
-                if(types[i] != 'nacional') {
-                    svg.append("g")
-                        .attr('class', 'chart-g')
-                        .selectAll("rect")
-                        .data(auxData)
-                        .enter()
-                        .append("rect")
-                        .attr('class', 'prueba')
-                        .attr("fill", function(d) { if(d.Sexo == 'Hombres') { return COLOR_PRIMARY_1; } else { return COLOR_COMP_1; }})
-                        .style('opacity', function() {
-                            let opacity = '';
-                            switch(types[i]) {
-                                case 'entre0y2000':
-                                    opacity = '0.95';
-                                    break;
-                                case 'entre2001y5000':
-                                    opacity = '0.875';
-                                    break;
-                                case 'entre5001y10000':
-                                    opacity = '0.8';
-                                    break;
-                                case 'entre10001y20000':
-                                    opacity = '0.725';
-                                    break;
-                                case 'entre20001y50000':
-                                    opacity = '0.65';
-                                    break;
-                                case 'entre50001y100000':
-                                    opacity = '0.575';
-                                    break;
-                                case 'entre100001y500000':
-                                    opacity = '0.5';
-                                    break;
-                                case '500001ymas':
-                                    opacity = '0.425';
-                                    break;
-                                default:
-                                    opacity = '0.95';
-                                    break;
-                            }
-                            return opacity;
-                        })
-                        .attr("x", function(d) { if(d.Sexo == 'Hombres') { return xM(d.Valor); } else { return xF(0); }})
-                        .attr("y", function(d) { return y(d.Edad); })
-                        .attr("width", function(d) { if(d.Sexo == 'Hombres') { return xM(0) - xM(d.Valor); } else { return xF(d.Valor) - xF(0); }})
-                        .attr("height", y.bandwidth());
-
-                } else {
-
-                    svg.append("g")
+                svg.append("g")
                     .attr('class', 'chart-g')
                     .selectAll("rect")
                     .data(auxData)
                     .enter()
                     .append("rect")
                     .attr('class', 'prueba')
-                    .attr('fill','none')
-                    .attr("stroke", function(d) { if(d.Sexo == 'Hombres') { return COLOR_PRIMARY_1; } else { return COLOR_COMP_1; }})
-                    .attr("stroke-width",'3px')
-                    .style('opacity', '0.5')
+                    .attr("fill", dataType.color)
+                    .style('opacity', dataType.opacity)
                     .attr("x", function(d) { if(d.Sexo == 'Hombres') { return xM(d.Valor); } else { return xF(0); }})
                     .attr("y", function(d) { return y(d.Edad); })
                     .attr("width", function(d) { if(d.Sexo == 'Hombres') { return xM(0) - xM(d.Valor); } else { return xF(d.Valor) - xF(0); }})
-                    .attr("height", y.bandwidth());
-                }
-                
-            }
+                    .attr("height", y.bandwidth())
+                    .attr("x", x(0))
+                    .attr("y", function(d) { return y(d.Edad); })
+                    .attr("width", 0)
+                    .attr("height", y.bandwidth())
+                    .on('mouseover', function(d,i,e) {
+                        //Dibujo contorno de la rect
+                        this.style.stroke = '#000';
+                        this.style.strokeWidth = '1';
 
+                        let html = '';
+    
+                        //Texto en tooltip
+                        if(currentType == 'Porcentajes') {
+                            html = '<p class="chart__tooltip--title">' + d.Sexo + ' (' + d.Edad + ' años)</p>' + 
+                            '<p class="chart__tooltip--title_2">Tipo: ' + dataType.Tipo + '</p>' +
+                            '<p class="chart__tooltip--text">% sobre total del grupo: ' + numberWithCommas3(parseFloat(d.Valor).toFixed(2))+ '%</p>';
+                        } else {
+                            html = '<p class="chart__tooltip--title">' + d.Sexo + ' (' + d.Edad + ' años)</p>' + 
+                            '<p class="chart__tooltip--title_2">Tipo: ' + dataType.Tipo + '</p>' +
+                            '<p class="chart__tooltip--text">Número absoluto de personas: ' + numberWithCommas3(parseInt(d.Valor))+ '</p>';
+                        }                        
+                    
+                        tooltip.html(html);
+    
+                        //Tooltip
+                        positionTooltip(window.event, tooltip);
+                        getInTooltip(tooltip);
+                    })
+                    .on('mouseout', function(d,i,e) {
+                        //Fuera contorno
+                        this.style.stroke = 'none';
+                        this.style.strokeWidth = '0';
+    
+                        //Fuera tooltip
+                        getOutTooltip(tooltip);
+                    })
+                    .transition()
+                    .duration(2000)
+                    .attr("x", function(d) { if(d.Sexo == 'Hombres') { return xM(d.Valor); } else { return xF(0); }})
+                    .attr('width', function(d) { if(d.Sexo == 'Hombres') { return xM(0) - xM(d.Valor); } else { return xF(d.Valor) - xF(0); }});                
+            }
         }
 
         ////////////
@@ -219,6 +218,9 @@ export function initChart(iframe) {
             document.getElementById('data_porcentajes').classList.remove('active');
             document.getElementById('data_absolutos').classList.add('active');
 
+            //Cambio texto
+            document.getElementById('texto-reactivo').textContent = 'Personas';
+
             //Cambiamos valor actual
             currentType = 'Absolutos';
 
@@ -230,6 +232,9 @@ export function initChart(iframe) {
             //Cambiamos color botón
             document.getElementById('data_porcentajes').classList.add('active');
             document.getElementById('data_absolutos').classList.remove('active');
+
+            //Cambio texto
+            document.getElementById('texto-reactivo').textContent = 'Porcentaje';
 
             //Cambiamos valor actual
             currentType = 'Porcentajes';

@@ -95,6 +95,8 @@ button {
             
 
             &--item {
+                width: 145px;
+
                 position: relative;
                 margin-top: 8px;
 
@@ -266,7 +268,6 @@ button {
 
 //Estilos para botones
 .btn {
-    //Estilos genéricos
     margin-top: 8px;
     cursor: pointer;
     
@@ -275,7 +276,7 @@ button {
 
     width: auto;
     padding: 0px 6px;
-    font-size: 0.85rem;
+    font-size: 0.85em;
     border-radius: 3px;
 
     &__option {
@@ -291,6 +292,7 @@ button {
     }
 
     &__animate {
+        min-width: 141px;
         height: 32px;
         border: 1.2px solid #E37A42;
         
@@ -300,17 +302,19 @@ button {
     }
 
     &__chart {
+        cursor: pointer;
         width: auto;
         max-width: 120px;
         height: 32px;
         border: 0.6px solid #E37A42;
-        background-color: #fcfcfc;
-
-        cursor: pointer;
+        background-color: #d4d4d4;
 
         &.active {
             background-color: #fff;
         }
+
+        &:first-of-type {margin-right: 8px;}
+        &:last-of-type {margin-left: 8px;}
     }
 }
 
@@ -452,6 +456,16 @@ button {
         font-size: 12px;
         line-height: 1.1;
         color: #262626;
+    }
+
+    &--title_2 {
+        font-style: normal;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 1.1;
+        color: #262626;
+
+        margin-top: 4px;
     }
 
     &--text {
