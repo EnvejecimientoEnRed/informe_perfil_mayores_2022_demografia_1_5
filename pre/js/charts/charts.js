@@ -10,15 +10,15 @@ import { setFixedIframeUrl } from './chart_helpers';
 
 //Colores fijos
 const COLOR_PRIMARY_1 = '#F8B05C', 
-COLOR_PRIMARY_2 = '#E37A42', 
-COLOR_ANAG_1 = '#D1834F', 
-COLOR_ANAG_2 = '#BF2727', 
+COLOR_PRIMARY_2 = '#E37A42',
 COLOR_COMP_1 = '#528FAD', 
-COLOR_COMP_2 = '#AADCE0', 
-COLOR_GREY_1 = '#B5ABA4', 
-COLOR_GREY_2 = '#64605A', 
-COLOR_OTHER_1 = '#B58753', 
-COLOR_OTHER_2 = '#731854';
+COLOR_COMP_2 = '#AADCE0',
+COLOR_GREY_1 = '#D6D6D6', 
+COLOR_GREY_2 = '#A3A3A3',
+COLOR_ANAG__PRIM_1 = '#BA9D5F', 
+COLOR_ANAG_PRIM_2 = '#9E6C51',
+COLOR_ANAG_PRIM_3 = '#9E3515',
+COLOR_ANAG_COMP_1 = '#1C5A5E';
 
 export function initChart(iframe) {
     //Creación de otros elementos relativos al gráfico que no requieran lectura previa de datos > Selectores múltiples o simples, timelines, etc 
@@ -28,10 +28,10 @@ export function initChart(iframe) {
         if (error) throw error;
 
         //SELECCIÓN DE ELEMENTOS
-        let selectedArr = ['nacional'];
+        let selectedArr = ['Nacional'];
         let mySellect = sellect("#my-element", {
-            originList: ['entre0y2000','entre2001y5000','entre5001y10000','entre10001y20000','entre20001y50000','entre50001y100000','entre100001y500000','500001ymas','nacional'],
-            destinationList: ['nacional'],
+            originList: ['Entre 0 y 2.000 habitantes','Entre 2.001 y 5.000','Entre 5.001 y 10.000','Entre 10.001 y 20.000','Entre 50.001 y 100.000',,'Entre 100.001 y 500.000','500.001 y más','Nacional'],
+            destinationList: ['Nacional'],
             onInsert: onChange
         });
 
@@ -47,9 +47,9 @@ export function initChart(iframe) {
         let currentType = 'Porcentajes';
 
         ///Valores iniciales de altura, anchura y márgenes > Primer desarrollo solo con Valores absolutos
-        let margin = {top: 5, right: 25, bottom: 20, left: 90},
+        let margin = {top: 5, right: 25, bottom: 20, left: 70},
             width = document.getElementById('chart').clientWidth - margin.left - margin.right,
-            height = document.getElementById('chart').clientHeight - margin.top - margin.bottom;
+            height = width * 0.67 - margin.top - margin.bottom;
 
         let svg = d3.select("#chart")
             .append("svg")
@@ -70,47 +70,68 @@ export function initChart(iframe) {
             .domain([0,1.5])
             .range([width / 2, width]);
 
+        let xAxis = function(svg) {
+            svg.call(d3.axisBottom(x).ticks(6).tickFormat(function(d) { return numberWithCommas3(Math.abs(d)); }));
+            svg.call(function(g){
+                g.selectAll('.tick line')
+                    .attr('class', function(d,i) {
+                        if (d == 0) {
+                            return 'line-special';
+                        }
+                    })
+                    .attr('y1', '0')
+                    .attr('y2', `-${height}`)
+            });
+        }
+
         svg.append("g")
             .attr("transform", "translate(0," + height + ")")
             .attr('class','x-axis')
-            .call(d3.axisBottom(x));
+            .call(xAxis);
 
         let y = d3.scaleBand()
             .range([ 0, height ])
             .domain(data.map(function(item) { return item.Edad; }).reverse())
             .padding(.1);
 
+        let yAxis = function(svg) {
+            svg.call(d3.axisLeft(y).tickValues(y.domain().filter(function(d,i){ return !(i%10)})));
+            svg.call(function(g){g.selectAll('.tick line').remove()});
+        }
+
         svg.append("g")
-            .call(d3.axisLeft(y));
+            .call(yAxis);
 
         function setPyramids(types, currentType) {
 
+            //Borrado de datos
             svg.selectAll('.chart-g')
                 .remove()
                 .exit();
 
+            //Lógica en eje
             if (currentType == 'Absolutos') {
 
                 if(types.indexOf('nacional') != -1) {
                     x.domain([-500000,500000]);
-                    svg.select(".x-axis").call(d3.axisBottom(x));                
+                    svg.select(".x-axis").call(xAxis);                
                     xM.domain([500000,0]);
                     xF.domain([0,500000]);
                 } else {
                     x.domain([-100000,100000]);
-                    svg.select(".x-axis").call(d3.axisBottom(x));                
+                    svg.select(".x-axis").call(xAxis);                
                     xM.domain([100000,0]);
                     xF.domain([0,100000]);
                 }
-
                 
             } else {
                 x.domain([-1.5,1.5]);
-                svg.select(".x-axis").call(d3.axisBottom(x));
+                svg.select(".x-axis").call(xAxis);
                 xM.domain([1.5,0]);
                 xF.domain([0,1.5]);
             }
 
+            //Lógica en pirámides
             for (let i = 0; i < types.length; i++) {
 
                 let auxData = data.filter(function(item) { if (item.Tipo == types[i] && item.Data == currentType) { return item; }});
@@ -219,8 +240,7 @@ export function initChart(iframe) {
 
         //Animación del gráfico
         document.getElementById('replay').addEventListener('click', function() {
-            //animateChart();
-            console.log("Intento de animación")
+            setPyramids(selectedArr, currentType);
         });
 
         //Iframe

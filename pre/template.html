@@ -23,15 +23,15 @@
                 <input type="text" id="my-element">
                 <div class="chart__logics">
                     <div class="chart__legend">
-                        <span class="chart__legend--item first">Media nacional</span>
-                        <span class="chart__legend--item second">0 a 2.000 habs.</span>
-                        <span class="chart__legend--item third">2.001 a 5.000</span>
-                        <span class="chart__legend--item four">5.001 a 10.000</span>
-                        <span class="chart__legend--item five">10.001 a 20.000</span>
-                        <span class="chart__legend--item six">20.001 a 50.000</span>
-                        <span class="chart__legend--item seven">50.001 a 100.000</span>
-                        <span class="chart__legend--item eight">100.001 a 500.000</span>
-                        <span class="chart__legend--item nine">500.001+</span>
+                        <span class="chart__legend--item anag_prim_3">Media nacional</span>
+                        <span class="chart__legend--item primary_1">0 a 2.000 habs.</span>
+                        <span class="chart__legend--item anag_prim_2">2.001 a 5.000</span>
+                        <span class="chart__legend--item anag_prim_2_aux">5.001 a 10.000</span>
+                        <span class="chart__legend--item comp_2">10.001 a 20.000</span>
+                        <span class="chart__legend--item comp_2_aux1">20.001 a 50.000</span>
+                        <span class="chart__legend--item comp_2_aux2">50.001 a 100.000</span>
+                        <span class="chart__legend--item anag_comp_1">100.001 a 500.000</span>
+                        <span class="chart__legend--item anag_comp_1_aux">500.001+</span>
                     </div>
                     <div class="chart__animate" id="replay">
                         <button class="btn btn__animate">
@@ -45,11 +45,15 @@
                     <button class="btn__chart active" id="data_porcentajes">Porcentajes</button>
                 </div>            
                 <div class="chart__viz">
-                    <div class="chart--text">
-                        <p>Hombres</p>
-                        <p>Mujeres</p>
-                    </div>
+                    <div class="chart--y_text">
+                        <p class="text__yaxis">Edad</p>
+                        <div class="chart--text">
+                            <p class="text__yaxis">Hombres</p>
+                            <p class="text__yaxis">Mujeres</p>
+                        </div>
+                    </div>                    
                     <div class="chart--viz" id="chart"></div>
+                    <p class="text__xaxis" id="texto-reactivo">Porcentaje</p>
                 </div>
                 <!-- Pie de gráfico -->
                 <div class="chart__footer">
@@ -109,10 +113,7 @@
                 <li class="tab tab--rrss" data-target="b-rrss"><i class="fa fa--share fa-share-alt"></i></li>
             </ul>
         </nav>
-        <div class="chart__tooltip" id="tooltip">
-            <p class="chart__tooltip--title"></p>
-            <p class="chart__tooltip--text"></p>
-        </div>  
+        <div class="chart__tooltip" id="tooltip"></div>  
     </div>
     <!-- Uso de PYMJS para alturas dinámicas -->
     <script type="text/javascript" src="https://pym.nprapps.org/pym.v1.min.js"></script>
