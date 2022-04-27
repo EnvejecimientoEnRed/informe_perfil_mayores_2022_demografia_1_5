@@ -9,13 +9,8 @@ import { setRRSSLinks } from '../modules/rrss';
 import { setFixedIframeUrl } from './chart_helpers';
 
 //Colores fijos
-const COLOR_PRIMARY_1 = '#F8B05C', 
-COLOR_PRIMARY_2 = '#E37A42',
-COLOR_COMP_1 = '#528FAD', 
-COLOR_COMP_2 = '#AADCE0',
-COLOR_GREY_1 = '#D6D6D6', 
-COLOR_GREY_2 = '#A3A3A3',
-COLOR_ANAG__PRIM_1 = '#BA9D5F', 
+const COLOR_PRIMARY_1 = '#F8B05C',
+COLOR_COMP_2 = '#AADCE0', 
 COLOR_ANAG_PRIM_2 = '#9E6C51',
 COLOR_ANAG_PRIM_3 = '#9E3515',
 COLOR_ANAG_COMP_1 = '#1C5A5E';
@@ -34,7 +29,7 @@ let dictionary = [
     {Tipo: 'Nacional', tipoData: 'nacional', color: COLOR_ANAG_PRIM_3, opacity: 1}
 ]
 
-export function initChart(iframe) {
+export function initChart() {
     //Creación de otros elementos relativos al gráfico que no requieran lectura previa de datos > Selectores múltiples o simples, timelines, etc 
 
     //Lectura de datos
@@ -225,7 +220,11 @@ export function initChart(iframe) {
             currentType = 'Absolutos';
 
             //Cambiamos gráfico
-            setPyramids(selectedArr, currentType);            
+            setPyramids(selectedArr, currentType);
+            
+            setTimeout(() => {
+                setChartCanvas();
+            }, 4000);
         });
 
         document.getElementById('data_porcentajes').addEventListener('click', function() {
@@ -240,7 +239,11 @@ export function initChart(iframe) {
             currentType = 'Porcentajes';
 
             //Cambiamos gráfico
-            setPyramids(selectedArr, currentType);            
+            setPyramids(selectedArr, currentType);
+            
+            setTimeout(() => {
+                setChartCanvas();
+            }, 4000);
         });
 
         //Animación del gráfico
@@ -255,7 +258,9 @@ export function initChart(iframe) {
         setRRSSLinks('piramide_espanoles_extranjeros');
 
         //Captura de pantalla de la visualización
-        setChartCanvas();
+        setTimeout(() => {
+            setChartCanvas();
+        }, 4000);
 
         let pngDownload = document.getElementById('pngImage');
 
@@ -264,6 +269,6 @@ export function initChart(iframe) {
         });
 
         //Altura del frame
-        setChartHeight(iframe);
+        setChartHeight();
     });    
 }
