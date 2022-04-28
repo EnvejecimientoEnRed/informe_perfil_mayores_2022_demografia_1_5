@@ -56,7 +56,7 @@ export function initChart() {
         let currentType = 'Porcentajes';
 
         ///Valores iniciales de altura, anchura y márgenes > Primer desarrollo solo con Valores absolutos
-        let margin = {top: 5, right: 25, bottom: 20, left: 70},
+        let margin = {top: 12.5, right: 25, bottom: 25, left: 70},
             width = document.getElementById('chart').clientWidth - margin.left - margin.right,
             height = width * 0.67 - margin.top - margin.bottom;
 
@@ -174,11 +174,11 @@ export function initChart() {
                         if(currentType == 'Porcentajes') {
                             html = '<p class="chart__tooltip--title">' + d.Sexo + ' (' + d.Edad + ' años)</p>' + 
                             '<p class="chart__tooltip--title_2">Tipo: ' + dataType.Tipo + '</p>' +
-                            '<p class="chart__tooltip--text">% sobre total del grupo: ' + numberWithCommas3(parseFloat(d.Valor).toFixed(2))+ '%</p>';
+                            '<p class="chart__tooltip--text">% sobre total del grupo: <b>' + numberWithCommas3(parseFloat(d.Valor).toFixed(2))+ '%</b></p>';
                         } else {
                             html = '<p class="chart__tooltip--title">' + d.Sexo + ' (' + d.Edad + ' años)</p>' + 
                             '<p class="chart__tooltip--title_2">Tipo: ' + dataType.Tipo + '</p>' +
-                            '<p class="chart__tooltip--text">Número absoluto de personas: ' + numberWithCommas3(parseInt(d.Valor))+ '</p>';
+                            '<p class="chart__tooltip--text">Número absoluto de personas: <b>' + numberWithCommas3(parseInt(d.Valor))+ '</b></p>';
                         }                        
                     
                         tooltip.html(html);
