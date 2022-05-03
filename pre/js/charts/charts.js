@@ -146,7 +146,64 @@ export function initChart() {
                 let dataType = dictionary.filter(function(item) { if(item.Tipo == types[i]) { return item; }})[0];
                 let auxData = data.filter(function(item) { if (item.Tipo == dataType.tipoData && item.Data == currentType) { return item; }});
 
-                svg.append("g")
+                if(types[i] == 'Nacional') {
+
+                    svg.append("g")
+                    .attr('class', 'chart-g')
+                    .selectAll("rect")
+                    .data(auxData)
+                    .enter()
+                    .append("rect")
+                    .attr('class', 'prueba')
+                    .attr("fill", "transparent")
+                    .attr('stroke', dataType.color)
+                    .style('opacity', dataType.opacity)
+                    .attr("x", function(d) { if(d.Sexo == 'Hombres') { return xM(d.Valor); } else { return xF(0); }})
+                    .attr("y", function(d) { return y(d.Edad); })
+                    .attr("width", function(d) { if(d.Sexo == 'Hombres') { return xM(0) - xM(d.Valor); } else { return xF(d.Valor) - xF(0); }})
+                    .attr("height", y.bandwidth())
+                    .attr("x", x(0))
+                    .attr("y", function(d) { return y(d.Edad); })
+                    .attr("width", 0)
+                    .attr("height", y.bandwidth())
+                    .on('mouseover', function(d,i,e) {
+                        //Dibujo contorno de la rect
+                        this.style.strokeWidth = '2';
+
+                        let html = '';
+    
+                        //Texto en tooltip
+                        if(currentType == 'Porcentajes') {
+                            html = '<p class="chart__tooltip--title">' + d.Sexo + ' (' + d.Edad + ' años)</p>' + 
+                            '<p class="chart__tooltip--title_2">Tipo: ' + dataType.Tipo + '</p>' +
+                            '<p class="chart__tooltip--text">Porcentaje sobre total del grupo: <b>' + numberWithCommas3(parseFloat(d.Valor).toFixed(2))+ '%</b></p>';
+                        } else {
+                            html = '<p class="chart__tooltip--title">' + d.Sexo + ' (' + d.Edad + ' años)</p>' + 
+                            '<p class="chart__tooltip--title_2">Tipo: ' + dataType.Tipo + '</p>' +
+                            '<p class="chart__tooltip--text">Número absoluto de personas: <b>' + numberWithCommas3(parseInt(d.Valor))+ '</b></p>';
+                        }                        
+                    
+                        tooltip.html(html);
+    
+                        //Tooltip
+                        positionTooltip(window.event, tooltip);
+                        getInTooltip(tooltip);
+                    })
+                    .on('mouseout', function(d,i,e) {
+                        //Fuera contorno
+                        this.style.strokeWidth = '1';
+    
+                        //Fuera tooltip
+                        getOutTooltip(tooltip);
+                    })
+                    .transition()
+                    .duration(2000)
+                    .attr("x", function(d) { if(d.Sexo == 'Hombres') { return xM(d.Valor); } else { return xF(0); }})
+                    .attr('width', function(d) { if(d.Sexo == 'Hombres') { return xM(0) - xM(d.Valor); } else { return xF(d.Valor) - xF(0); }}); 
+
+                } else {
+                    
+                    svg.append("g")
                     .attr('class', 'chart-g')
                     .selectAll("rect")
                     .data(auxData)
@@ -174,7 +231,7 @@ export function initChart() {
                         if(currentType == 'Porcentajes') {
                             html = '<p class="chart__tooltip--title">' + d.Sexo + ' (' + d.Edad + ' años)</p>' + 
                             '<p class="chart__tooltip--title_2">Tipo: ' + dataType.Tipo + '</p>' +
-                            '<p class="chart__tooltip--text">% sobre total del grupo: <b>' + numberWithCommas3(parseFloat(d.Valor).toFixed(2))+ '%</b></p>';
+                            '<p class="chart__tooltip--text">Porcentaje sobre total del grupo: <b>' + numberWithCommas3(parseFloat(d.Valor).toFixed(2))+ '%</b></p>';
                         } else {
                             html = '<p class="chart__tooltip--title">' + d.Sexo + ' (' + d.Edad + ' años)</p>' + 
                             '<p class="chart__tooltip--title_2">Tipo: ' + dataType.Tipo + '</p>' +
@@ -198,7 +255,9 @@ export function initChart() {
                     .transition()
                     .duration(2000)
                     .attr("x", function(d) { if(d.Sexo == 'Hombres') { return xM(d.Valor); } else { return xF(0); }})
-                    .attr('width', function(d) { if(d.Sexo == 'Hombres') { return xM(0) - xM(d.Valor); } else { return xF(d.Valor) - xF(0); }});                
+                    .attr('width', function(d) { if(d.Sexo == 'Hombres') { return xM(0) - xM(d.Valor); } else { return xF(d.Valor) - xF(0); }}); 
+
+                }               
             }
         }
 
