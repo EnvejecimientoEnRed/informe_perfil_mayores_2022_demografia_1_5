@@ -39,7 +39,7 @@ export function initChart() {
         //SELECCIÓN DE ELEMENTOS
         let selectedArr = ['Nacional'];
         let mySellect = sellect("#my-element", {
-            originList: ['Entre 0 y 2.000 habitantes','Entre 2.001 y 5.000','Entre 5.001 y 10.000','Entre 10.001 y 20.000','Entre 50.001 y 100.000',,'Entre 100.001 y 500.000','500.001 y más','Nacional'],
+            originList: ['Entre 0 y 2.000 habitantes','Entre 2.001 y 5.000','Entre 5.001 y 10.000','Entre 10.001 y 20.000', 'Entre 20.001 y 50.000','Entre 50.001 y 100.000',,'Entre 100.001 y 500.000','500.001 y más','Nacional'],
             destinationList: ['Nacional'],
             onInsert: onChange
         });
