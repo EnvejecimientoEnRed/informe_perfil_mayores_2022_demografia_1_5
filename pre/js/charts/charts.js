@@ -33,7 +33,7 @@ export function initChart() {
     //Creación de otros elementos relativos al gráfico que no requieran lectura previa de datos > Selectores múltiples o simples, timelines, etc 
 
     //Lectura de datos
-    d3.csv('https://raw.githubusercontent.com/CarlosMunozDiazCSIC/informe_perfil_mayores_2022_demografia_1_5/main/data/piramide_2021_tamanos_nacional.csv', function(error,data) {
+    d3.csv('https://raw.githubusercontent.com/EnvejecimientoEnRed/informe_perfil_mayores_2022_demografia_1_5/main/data/piramide_2021_tamanos_nacional.csv', function(error,data) {
         if (error) throw error;
 
         //SELECCIÓN DE ELEMENTOS
